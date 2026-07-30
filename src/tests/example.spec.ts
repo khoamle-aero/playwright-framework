@@ -10,5 +10,6 @@ test('user can login with valid credentials', async ({ page }) => {
   await loginPage.login('standard_user', 'secret_sauce');
 
   await expect(page).toHaveURL(/inventory/);
-  await expect(page.getByRole('heading', { name: /products/i })).toBeVisible();
+  await expect(page.getByText('Products', { exact: true })).toBeVisible();
+
 });
