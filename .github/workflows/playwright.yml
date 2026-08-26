@@ -1,4 +1,15 @@
 name: Playwright Tests
+    - name: Run Playwright tests
+      run: npx playwright test
+    - name: Generate Linux snapshots
+      if: always()
+      run: npx playwright test --update-snapshots
+    - name: Upload snapshots
+      if: always()
+      uses: actions/upload-artifact@v5
+      with:
+        name: linux-snapshots
+        path: src/tests/example.spec.ts-snapshots/
 on:
   push:
     branches: [ main, master ]
