@@ -1,62 +1,97 @@
-# Playwright TypeScript Automation Framework
+cat > README.md << 'READMEEOF'
+# Playwright Automation Framework
 
-A modern, enterprise-ready Playwright TypeScript framework built around the Page Object Model (POM), reusable fixtures, utilities, and environment-based configuration for reliable UI automation.
+A TypeScript test automation framework demonstrating UI, API, and hybrid testing patterns, with a CI/CD pipeline running both layers in parallel on every push.
 
-## Features
+Built to showcase practical QA automation skills: Page Object Model design, API client architecture, cross-browser execution, visual regression, accessibility testing, and a real GitHub Actions pipeline — including the kind of debugging (environment config, CI-specific failures, flaky test isolation) that comes up in day-to-day automation work.
 
-- Page Object Model for maintainable test design
-- Reusable fixtures and utility helpers
-- Cross-browser execution for Chromium, Firefox, and WebKit
-- Automatic screenshots, traces, and videos on failure
-- HTML and JSON reporting
-- Environment-based configuration with dotenv support
-- CI/CD-friendly setup for GitHub Actions
+## What's demonstrated here
 
-## Installation
-
-1. Clone the repository
-2. Install dependencies:
-
-```bash
-npm install
-npx playwright install
-```
+| Area | Where |
+|---|---|
+| UI automation with Page Object Model | `src/pages/`, `src/tests/example.spec.ts` |
+| API test automation (auth, full CRUD, negative cases) | `src/api/`, `src/tests/api/` |
+| Hybrid testing (API for setup, UI for verification) | `src/tests/api/hybrid-ui-api.spec.ts` |
+| Visual regression testing | `src/tests/example.spec.ts` (`toHaveScreenshot`) |
+| Accessibility testing (WCAG 2.0 A) | `src/tests/example.spec.ts` (axe-core) |
+| Cross-browser execution | Chromium, Firefox, WebKit projects |
+| CI/CD pipeline (parallel jobs, artifacts) | `.github/workflows/playwright.yml` |
 
 ## Project Structure
 
 ```text
 playwright-framework/
-├── config/              # Environment and application config
-├── constants/           # Shared URLs, selectors, and constants
-├── fixtures/            # Custom Playwright fixtures
-├── pages/               # Page Object Model classes
-├── tests/               # Test specifications
-├── test-data/           # JSON or fixture-based test data
-├── utilities/           # Reusable helpers such as waits, screenshots, browser launchers
-├── reports/             # HTML and JSON reports
-├── logs/                # Execution logs
-├── playwright.config.ts # Playwright configuration
-├── .env                 # Environment variables
+├── src/
+│   ├── api/
+│   │   ├── clients/          # API client classes (one per resource, mirrors POM)
+│   │   │   ├── base-api-client.ts
+│   │   │   ├── auth.api.ts
+│   │   │   └── booking.api.ts
+│   │   └── types/             # TypeScript interfaces for API payloads
+│   ├── fixtures/
+│   │   ├── base.fixture.ts    # Injects UI page objects into tests
+│   │   └── api.fixture.ts     # Injects API clients into tests
+│   ├── pages/                 # Page Object Model classes for UI tests
+│   └── tests/
+│       ├── example.spec.ts    # UI: login, visual regression, accessibility
+│       └── api/                # API: auth, CRUD, hybrid UI+API
+├── test-data/                  # JSON test data (e.g. login credentials)
+├── config/                     # Environment configuration
+├── constants/                  # Shared URLs and selectors
+├── utilities/                  # Reusable helpers (waits, screenshots, etc.)
+├── reports/                     # HTML and JSON reports (generated)
+├── .github/workflows/           # CI pipeline
+├── playwright.config.ts
+└── .env.example                 # Template for local environment variables
+```
+
+## Architecture notes
+
+**API layer mirrors the UI layer's design.** `BaseApiClient` plays the same role `BasePage` plays for UI tests: shared request/response handling that every resource-specific client (`AuthApiClient`, `BookingApiClient`) extends. Fixtures (`api.fixture.ts`) inject ready-to-use clients into tests the same way `base.fixture.ts` injects page objects — so switching between reading a UI test and an API test in this repo, the pattern is already familiar.
+
+**Two separate base URLs, one config.** UI tests run against [SauceDemo](https://saucedemo.com); API tests run against [Restful-Booker](https://restful-booker.herokuapp.com), a purpose-built API testing playground. `playwright.config.ts` defines a dedicated `api` project with its own `baseURL`, scoped via `testMatch`/`testIgnore` so the two suites never cross-contaminate.
+
+**The CRUD suite runs in serial, deliberately.** `booking-crud.spec.ts` uses `test.describe.configure({ mode: 'serial' })` because it exercises a real dependency chain — create → read → update → delete — where each step needs the ID from the previous one. This is called out explicitly in comments since `fullyParallel: true` is the project default, and this file is the intentional exception.
+
+## Installation
+
+```bash
+git clone <this-repo>
+cd playwright-framework
+npm install
+npx playwright install
+```
+
+Copy `.env.example` to `.env` and set `BASE_URL` if you want to override the default:
+
+```bash
+cp .env.example .env
 ```
 
 ## Running Tests
 
-Run all tests:
+Run everything (UI + API):
 
 ```bash
 npx playwright test
 ```
 
-Run a specific test file:
+Run just the UI suite:
 
 ```bash
-npx playwright test tests/example.spec.ts
+npx playwright test --project=chromium --project=firefox --project=webkit
 ```
 
-Run a specific browser project:
+Run just the API suite:
 
 ```bash
-npx playwright test --project=chromium
+npx playwright test --project=api
+```
+
+Run a specific file:
+
+```bash
+npx playwright test src/tests/example.spec.ts
 ```
 
 Open the HTML report:
@@ -67,64 +102,42 @@ npx playwright show-report reports/html
 
 ## Reporting
 
-The framework is configured to generate:
-
-- HTML report in reports/html
-- JSON report in reports/results.json
-- Screenshots on failure
-- Videos on failure
-- Trace files on retry/failure
+- HTML report: `reports/html`
+- JSON report: `reports/results.json`
+- Screenshots, videos, and traces captured on failure/retry
 
 ## Environment Configuration
 
-Set environment variables in the .env file:
+| Variable | Purpose | Default |
+|---|---|---|
+| `BASE_URL` | UI test target | `https://example.com` |
+| `RESTFUL_BOOKER_URL` | API test target | `https://restful-booker.herokuapp.com` |
 
-```env
-BASE_URL=https://example.com
-```
-
-You can also override values at runtime:
+Override at runtime:
 
 ```bash
 BASE_URL=https://staging.example.com npx playwright test
 ```
 
-## GitHub Actions Integration
+## CI/CD
 
-A sample workflow can run the suite on every push or pull request.
+GitHub Actions runs two jobs in parallel on every push and pull request to `main`:
 
-```yaml
-name: Playwright Tests
+- **`ui-tests`** — Chromium, Firefox, WebKit, with HTML/trace/video artifacts on failure
+- **`api-tests`** — auth, CRUD, and hybrid suites against Restful-Booker
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+Both jobs upload their HTML report as a downloadable artifact, so a failure can be diagnosed without re-running locally.
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npx playwright test
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: reports
-```
+## Best Practices Followed
 
-## Best Practices
+- Selectors and API calls live in page objects / API clients, never inline in test files
+- Shared setup goes through fixtures, not repeated per-test
+- Test data lives in JSON files or is built via factory functions (`buildBooking()`), not hardcoded inline
+- Secrets and environment-specific values are never committed — `.env` is git-ignored, `.env.example` documents what's needed
+- Serial execution is used only where a genuine data dependency requires it, and is commented to explain why
+READMEEOF
 
-- Keep selectors in page objects rather than tests
-- Use fixtures for shared test setup
-- Store test data externally in JSON files
-- Avoid hardcoded URLs inside tests
-- Use descriptive test names and assertions
-- Capture screenshots and traces for debugging failures
+cat > .env.example << 'ENVEOF'
+BASE_URL=https://saucedemo.com
+RESTFUL_BOOKER_URL=https://restful-booker.herokuapp.com
+ENVEOF
