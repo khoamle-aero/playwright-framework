@@ -1,130 +1,44 @@
-# Playwright TypeScript Automation Framework
+# Playwright Automation Framework
 
-A modern, enterprise-ready Playwright TypeScript framework built around the Page Object Model (POM), reusable fixtures, utilities, and environment-based configuration for reliable UI automation.
+A TypeScript test automation framework demonstrating UI, API, and hybrid testing patterns, with a CI/CD pipeline running both layers in parallel on every push.
 
-## Features
+Built to showcase practical QA automation skills: Page Object Model design, API client architecture, cross-browser execution, visual regression, accessibility testing, and a real GitHub Actions pipeline.
 
-- Page Object Model for maintainable test design
-- Reusable fixtures and utility helpers
-- Cross-browser execution for Chromium, Firefox, and WebKit
-- Automatic screenshots, traces, and videos on failure
-- HTML and JSON reporting
-- Environment-based configuration with dotenv support
-- CI/CD-friendly setup for GitHub Actions
+## What's demonstrated here
+
+| Area | Where |
+|---|---|
+| UI automation with Page Object Model | src/pages/, src/tests/example.spec.ts |
+| API test automation (auth, full CRUD, negative cases) | src/api/, src/tests/api/ |
+| Hybrid testing (API for setup, UI for verification) | src/tests/api/hybrid-ui-api.spec.ts |
+| Visual regression testing | src/tests/example.spec.ts |
+| Accessibility testing (WCAG 2.0 A) | src/tests/example.spec.ts (axe-core) |
+| Cross-browser execution | Chromium, Firefox, WebKit projects |
+| CI/CD pipeline (parallel jobs, artifacts) | .github/workflows/playwright.yml |
 
 ## Installation
 
-1. Clone the repository
-2. Install dependencies:
+git clone this repo, then:
 
-```bash
 npm install
 npx playwright install
-```
 
-## Project Structure
-
-```text
-playwright-framework/
-├── config/              # Environment and application config
-├── constants/           # Shared URLs, selectors, and constants
-├── fixtures/            # Custom Playwright fixtures
-├── pages/               # Page Object Model classes
-├── tests/               # Test specifications
-├── test-data/           # JSON or fixture-based test data
-├── utilities/           # Reusable helpers such as waits, screenshots, browser launchers
-├── reports/             # HTML and JSON reports
-├── logs/                # Execution logs
-├── playwright.config.ts # Playwright configuration
-├── .env                 # Environment variables
-```
+Copy .env.example to .env and adjust values if needed.
 
 ## Running Tests
 
-Run all tests:
+Run everything: npx playwright test
+Run UI only: npx playwright test --project=chromium --project=firefox --project=webkit
+Run API only: npx playwright test --project=api
 
-```bash
-npx playwright test
-```
+## CI/CD
 
-Run a specific test file:
+GitHub Actions runs two parallel jobs on every push: ui-tests and api-tests. Both upload HTML reports as artifacts.
 
-```bash
-npx playwright test tests/example.spec.ts
-```
+## Best Practices Followed
 
-Run a specific browser project:
-
-```bash
-npx playwright test --project=chromium
-```
-
-Open the HTML report:
-
-```bash
-npx playwright show-report reports/html
-```
-
-## Reporting
-
-The framework is configured to generate:
-
-- HTML report in reports/html
-- JSON report in reports/results.json
-- Screenshots on failure
-- Videos on failure
-- Trace files on retry/failure
-
-## Environment Configuration
-
-Set environment variables in the .env file:
-
-```env
-BASE_URL=https://example.com
-```
-
-You can also override values at runtime:
-
-```bash
-BASE_URL=https://staging.example.com npx playwright test
-```
-
-## GitHub Actions Integration
-
-A sample workflow can run the suite on every push or pull request.
-
-```yaml
-name: Playwright Tests
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npx playwright test
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: reports
-```
-
-## Best Practices
-
-- Keep selectors in page objects rather than tests
-- Use fixtures for shared test setup
-- Store test data externally in JSON files
-- Avoid hardcoded URLs inside tests
-- Use descriptive test names and assertions
-- Capture screenshots and traces for debugging failures
+- Selectors and API calls live in page objects / API clients
+- Shared setup goes through fixtures
+- Test data built via factory functions, not hardcoded
+- Secrets never committed; .env is git-ignored
+- Serial execution used only where a genuine data dependency requires it
