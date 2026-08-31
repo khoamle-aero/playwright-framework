@@ -5,6 +5,7 @@ import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const baseURL = process.env.BASE_URL || 'https://example.com';
+const apiBaseURL = process.env.RESTFUL_BOOKER_URL || 'https://restful-booker.herokuapp.com';
 const isCI = !!process.env.CI;
 
 export default defineConfig({
@@ -35,15 +36,25 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: '**/api/**',
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'firefox',
+      testIgnore: '**/api/**',
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',
+      testIgnore: '**/api/**',
       use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'api',
+      testMatch: '**/api/**',
+      use: {
+        baseURL: apiBaseURL,
+      },
     },
   ],
   outputDir: path.join(__dirname, 'reports', 'test-results'),
