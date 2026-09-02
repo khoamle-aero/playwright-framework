@@ -1,8 +1,8 @@
 # Playwright Automation Framework
 
-A TypeScript test automation framework demonstrating UI, API, and hybrid testing patterns, with a CI/CD pipeline running both layers in parallel on every push.
+A TypeScript test automation framework demonstrating UI, API, and hybrid testing patterns, with a CI/CD pipeline running three layers in parallel on every push.
 
-Built to showcase practical QA automation skills: Page Object Model design, API client architecture, cross-browser execution, visual regression, accessibility testing, and a real GitHub Actions pipeline — including the kind of debugging (environment config, CI-specific failures, flaky test isolation) that comes up in day-to-day automation work.
+Built to showcase practical QA automation skills: Page Object Model design, API client architecture, cross-browser execution, visual regression, accessibility testing, manual/exploratory API testing via Postman, and a real GitHub Actions pipeline — including the kind of debugging (environment config, CI-specific failures, flaky test isolation, dependency lockfile drift) that comes up in day-to-day automation work.
 
 ## What's demonstrated here
 
@@ -11,10 +11,11 @@ Built to showcase practical QA automation skills: Page Object Model design, API 
 | UI automation with Page Object Model | `src/pages/`, `src/tests/example.spec.ts` |
 | API test automation (auth, full CRUD, negative cases) | `src/api/`, `src/tests/api/` |
 | Hybrid testing (API for setup, UI for verification) | `src/tests/api/hybrid-ui-api.spec.ts` |
+| Manual/exploratory API testing (Postman + Newman) | `postman/` |
 | Visual regression testing | `src/tests/example.spec.ts` (`toHaveScreenshot`) |
 | Accessibility testing (WCAG 2.0 A) | `src/tests/example.spec.ts` (axe-core) |
 | Cross-browser execution | Chromium, Firefox, WebKit projects |
-| CI/CD pipeline (parallel jobs, artifacts) | `.github/workflows/playwright.yml` |
+| CI/CD pipeline (3 parallel jobs, artifacts) | `.github/workflows/playwright.yml` |
 
 ## Project Structure
 
@@ -34,6 +35,7 @@ playwright-framework/
 │   └── tests/
 │       ├── example.spec.ts    # UI: login, visual regression, accessibility
 │       └── api/                # API: auth, CRUD, hybrid UI+API
+├── postman/                    # Postman collection for manual/exploratory API testing
 ├── test-data/                  # JSON test data (e.g. login credentials)
 ├── config/                     # Environment configuration
 ├── constants/                  # Shared URLs and selectors
@@ -51,6 +53,8 @@ playwright-framework/
 **Two separate base URLs, one config.** UI tests run against [SauceDemo](https://saucedemo.com); API tests run against [Restful-Booker](https://restful-booker.herokuapp.com), a purpose-built API testing playground. `playwright.config.ts` defines a dedicated `api` project with its own `baseURL`, scoped via `testMatch`/`testIgnore` so the two suites never cross-contaminate.
 
 **The CRUD suite runs in serial, deliberately.** `booking-crud.spec.ts` uses `test.describe.configure({ mode: 'serial' })` because it exercises a real dependency chain — create → read → update → delete — where each step needs the ID from the previous one. This is called out explicitly in comments since `fullyParallel: true` is the project default, and this file is the intentional exception.
+
+**Postman complements, not duplicates, the automated suite.** The `postman/` collection covers the same Restful-Booker CRUD flow as `src/tests/api/`, but exists to demonstrate manual/exploratory testing skill and Postman-specific technique (test scripts, collection variables chaining `token`/`bookingId` across requests) — a common day-to-day QA tool alongside code-based automation. It's runnable both in the Postman GUI and headlessly via Newman.
 
 ## Installation
 
@@ -87,6 +91,12 @@ Run just the API suite:
 npx playwright test --project=api
 ```
 
+Run the Postman collection via Newman:
+
+```bash
+npm run test:postman
+```
+
 Run a specific file:
 
 ```bash
@@ -104,6 +114,7 @@ npx playwright show-report reports/html
 - HTML report: `reports/html`
 - JSON report: `reports/results.json`
 - Screenshots, videos, and traces captured on failure/retry
+- Newman prints a pass/fail summary table to the console; an HTML report can be added via `newman-reporter-htmlextra`
 
 ## Environment Configuration
 
@@ -120,12 +131,13 @@ BASE_URL=https://staging.example.com npx playwright test
 
 ## CI/CD
 
-GitHub Actions runs two jobs in parallel on every push and pull request to `main`:
+GitHub Actions runs three jobs in parallel on every push and pull request to `main`:
 
 - **`ui-tests`** — Chromium, Firefox, WebKit, with HTML/trace/video artifacts on failure
 - **`api-tests`** — auth, CRUD, and hybrid suites against Restful-Booker
+- **`postman-tests`** — the Postman collection, run headlessly via Newman
 
-Both jobs upload their HTML report as a downloadable artifact, so a failure can be diagnosed without re-running locally.
+All jobs upload their reports as downloadable artifacts, so a failure can be diagnosed without re-running locally.
 
 ## Best Practices Followed
 
@@ -134,10 +146,4 @@ Both jobs upload their HTML report as a downloadable artifact, so a failure can 
 - Test data lives in JSON files or is built via factory functions (`buildBooking()`), not hardcoded inline
 - Secrets and environment-specific values are never committed — `.env` is git-ignored, `.env.example` documents what's needed
 - Serial execution is used only where a genuine data dependency requires it, and is commented to explain why
-
-```bash
-BASE_URL=https://saucedemo.com
-RESTFUL_BOOKER_URL=https://restful-booker.herokuapp.com
-```
-
-
+- `package-lock.json` is committed and kept in sync with `package.json` so `npm ci` behaves identically in CI and locally
