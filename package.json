@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test:postman": "newman run postman/Restful-Booker-API-postman_collection.json -e postman/Restful-Booker-API-postman_collection.json"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -12,6 +14,7 @@
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.0",
     "@types/node": "^26.1.2",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "newman": "^6.2.2"
   }
 }
