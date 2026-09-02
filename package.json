@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:postman": "newman run postman/Restful-Booker-API-postman_collection.json -e postman/Restful-Booker-API-postman_collection.json"
+    "test:postman": "newman run postman/Restful-Booker-API-postman_collection.json"
   },
   "keywords": [],
   "author": "",
