@@ -1,0 +1,51 @@
+name: SQL DB Validation Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sql-db-validation/**"
+      - ".github/workflows/sql-db-validation.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "sql-db-validation/**"
+      - ".github/workflows/sql-db-validation.yml"
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: sql-db-validation
+
+jobs:
+  test:
+    name: Run DB validation suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: sql-db-validation/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run tests
+        run: npm test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: sql-db-validation/playwright-report/
+          retention-days: 14
