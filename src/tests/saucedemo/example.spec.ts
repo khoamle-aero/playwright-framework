@@ -1,6 +1,6 @@
-import { test, expect } from '../fixtures/base.fixture';
-import { LoginPage } from '../pages/login.page';
-import userData from '../../test-data/login-users.json';
+import { test, expect } from '../../fixtures/base.fixture';
+import { LoginPage } from '../../pages/login.page';
+import userData from '../../../test-data/login-users.json';
 import AxeBuilder from '@axe-core/playwright';
 
 test('user can login with valid credentials', async ({ page }) => {

@@ -27,7 +27,9 @@
         "id": "chromium",
         "name": "chromium",
         "testDir": "C:/Users/khoam/playwright-framework/src/tests",
-        "testIgnore": [],
+        "testIgnore": [
+          "**/api/**"
+        ],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
@@ -43,7 +45,9 @@
         "id": "firefox",
         "name": "firefox",
         "testDir": "C:/Users/khoam/playwright-framework/src/tests",
-        "testIgnore": [],
+        "testIgnore": [
+          "**/api/**"
+        ],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
@@ -59,9 +63,27 @@
         "id": "webkit",
         "name": "webkit",
         "testDir": "C:/Users/khoam/playwright-framework/src/tests",
-        "testIgnore": [],
+        "testIgnore": [
+          "**/api/**"
+        ],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      },
+      {
+        "outputDir": "C:/Users/khoam/playwright-framework/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "api",
+        "name": "api",
+        "testDir": "C:/Users/khoam/playwright-framework/src/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/api/**"
         ],
         "timeout": 45000
       }
@@ -100,55 +122,104 @@
   },
   "suites": [
     {
-      "title": "example.spec.ts",
-      "file": "example.spec.ts",
+      "title": "auth\\ParaBankRegistration.spec.ts",
+      "file": "auth/ParaBankRegistration.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [
+      "specs": [],
+      "suites": [
         {
-          "title": "user can login with valid credentials",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "Customer Registration",
+          "file": "auth/ParaBankRegistration.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 45000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [
+              "title": "REG-01: register a new customer with valid data",
+              "ok": false,
+              "tags": [],
+              "tests": [
                 {
-                  "workerIndex": 8,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 713,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-08-11T21:47:48.032Z",
+                  "timeout": 45000,
                   "annotations": [],
-                  "attachments": []
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 16280,
+                      "error": {
+                        "message": "TimeoutError: locator.fill: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[id=\"customer.firstName\"]')\u001b[22m\n",
+                        "stack": "TimeoutError: locator.fill: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[id=\"customer.firstName\"]')\u001b[22m\n\n    at ParaBankRegistrationPage.register (C:\\Users\\khoam\\playwright-framework\\src\\pages\\ParaBankRegistrationPage.ts:44:26)\n    at C:\\Users\\khoam\\playwright-framework\\src\\tests\\auth\\ParaBankRegistration.spec.ts:9:36",
+                        "location": {
+                          "file": "C:\\Users\\khoam\\playwright-framework\\src\\pages\\ParaBankRegistrationPage.ts",
+                          "column": 26,
+                          "line": 44
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\ParaBankRegistrationPage.ts:44\n\n\u001b[0m \u001b[90m 42 |\u001b[39m\n \u001b[90m 43 |\u001b[39m   \u001b[36masync\u001b[39m register(customer\u001b[33m:\u001b[39m \u001b[33mNewCustomer\u001b[39m)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[36mvoid\u001b[39m\u001b[33m>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 44 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mfirstName\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mfirstName)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlastName\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mlastName)\u001b[33m;\u001b[39m\n \u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mstreet\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mstreet)\u001b[33m;\u001b[39m\n \u001b[90m 47 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mcity\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mcity)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\khoam\\playwright-framework\\src\\pages\\ParaBankRegistrationPage.ts",
+                            "column": 26,
+                            "line": 44
+                          },
+                          "message": "TimeoutError: locator.fill: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[id=\"customer.firstName\"]')\u001b[22m\n\n\n\u001b[90m   at \u001b[39m..\\pages\\ParaBankRegistrationPage.ts:44\n\n\u001b[0m \u001b[90m 42 |\u001b[39m\n \u001b[90m 43 |\u001b[39m   \u001b[36masync\u001b[39m register(customer\u001b[33m:\u001b[39m \u001b[33mNewCustomer\u001b[39m)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[36mvoid\u001b[39m\u001b[33m>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 44 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mfirstName\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mfirstName)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlastName\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mlastName)\u001b[33m;\u001b[39m\n \u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mstreet\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mstreet)\u001b[33m;\u001b[39m\n \u001b[90m 47 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mcity\u001b[33m.\u001b[39mfill(customer\u001b[33m.\u001b[39mcity)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at ParaBankRegistrationPage.register (C:\\Users\\khoam\\playwright-framework\\src\\pages\\ParaBankRegistrationPage.ts:44:26)\u001b[22m\n\u001b[2m    at C:\\Users\\khoam\\playwright-framework\\src\\tests\\auth\\ParaBankRegistration.spec.ts:9:36\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T23:56:16.838Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\khoam\\playwright-framework\\reports\\test-results\\auth-ParaBankRegistration--046a7-ew-customer-with-valid-data-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\khoam\\playwright-framework\\reports\\test-results\\auth-ParaBankRegistration--046a7-ew-customer-with-valid-data-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\khoam\\playwright-framework\\reports\\test-results\\auth-ParaBankRegistration--046a7-ew-customer-with-valid-data-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\khoam\\playwright-framework\\src\\pages\\ParaBankRegistrationPage.ts",
+                        "column": 26,
+                        "line": 44
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
                 }
               ],
-              "status": "expected"
+              "id": "b1fd90ab3c370c068390-14a47f1993037bc69a02",
+              "file": "auth/ParaBankRegistration.spec.ts",
+              "line": 6,
+              "column": 7
             }
-          ],
-          "id": "a30a6eba6312f6b87ea5-8f292f6a6d2498c4b840",
-          "file": "example.spec.ts",
-          "line": 6,
-          "column": 5
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-11T21:47:47.382Z",
-    "duration": 1491.3510000000242,
-    "expected": 1,
+    "startTime": "2026-09-13T23:56:16.228Z",
+    "duration": 39189.541,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

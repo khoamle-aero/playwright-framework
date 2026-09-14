@@ -1,67 +1,71 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
-import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-const baseURL = process.env.BASE_URL || 'https://example.com';
-const apiBaseURL = process.env.RESTFUL_BOOKER_URL || 'https://restful-booker.herokuapp.com';
-const isCI = !!process.env.CI;
+const parabankURL = process.env.PARABANK_URL || 'https://parabank.parasoft.com/parabank/';
+const saucedemoURL = process.env.SAUCEDEMO_URL || 'https://www.saucedemo.com/';
+const restfulBookerURL = process.env.RESTFUL_BOOKER_URL || 'https://restful-booker.herokuapp.com';
 
 export default defineConfig({
   testDir: './src/tests',
-  timeout: 45 * 1000,
-  expect: {
-    timeout: 10 * 1000,
-  },
+  timeout: 30_000,
+  expect: { timeout: 5_000 },
   fullyParallel: true,
-  forbidOnly: isCI,
-  retries: isCI ? 2 : 1,
-  workers: isCI ? 2 : undefined,
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: 'reports/html', open: 'never' }],
-    ['json', { outputFile: 'reports/results.json' }],
-  ],
+  retries: process.env.CI ? 1 : 0,
+  reporter: [['html', { open: 'never' }], ['list']],
+
+  // No global baseURL here — each project below sets its own, scoped to
+  // that site's/API's test folder, so the suites can't collide.
   use: {
-    baseURL,
-    headless: true,
-    trace: 'on-first-retry',
+    headless: false,
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    ignoreHTTPSErrors: true,
-    actionTimeout: 15000,
-    navigationTimeout: 30000,
   },
+
   projects: [
     {
-      name: 'chromium',
-      testIgnore: '**/api/**',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      testIgnore: '**/api/**',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      testIgnore: '**/api/**',
-      use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'api',
-      testMatch: '**/api/**',
+      name: 'parabank-chromium',
+      testDir: './src/tests/parabank',
       use: {
-        baseURL: apiBaseURL,
+        ...devices['Desktop Chrome'],
+        baseURL: parabankURL,
+      },
+    },
+    {
+      name: 'parabank-firefox',
+      testDir: './src/tests/parabank',
+      use: {
+        ...devices['Desktop Firefox'],
+        baseURL: parabankURL,
+      },
+    },
+    {
+      name: 'saucedemo-chromium',
+      testDir: './src/tests/saucedemo',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: saucedemoURL,
+      },
+    },
+    {
+      // Pure API-only specs (no `page` fixture usage) — request fixture only.
+      name: 'restful-booker-api',
+      testDir: './src/tests/api',
+      testMatch: ['auth.spec.ts', 'booking-crud.spec.ts'],
+      use: {
+        baseURL: restfulBookerURL,
+      },
+    },
+    {
+      // Separate project for the hybrid spec since it needs a real browser
+      // (`page`) in addition to `request` — the browserless api project above
+      // would fail on any `page.*` call.
+      name: 'restful-booker-hybrid-chromium',
+      testDir: './src/tests/api',
+      testMatch: ['hybrid-ui-api.spec.ts'],
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: restfulBookerURL,
       },
     },
   ],
-  outputDir: path.join(__dirname, 'reports', 'test-results'),
-  /* Uncomment and configure if you need to start a local app before tests. */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: baseURL,
-  //   reuseExistingServer: !isCI,
-  // },
 });
