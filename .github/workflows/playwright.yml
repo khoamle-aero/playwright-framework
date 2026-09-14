@@ -52,7 +52,8 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
-      RESTFUL_BOOKER_URL: https://herokuapp.com
+      # FIXED: Changed from https://herokuapp.com to the correct endpoint
+      RESTFUL_BOOKER_URL: https://restful-booker.herokuapp.com
       BASE_URL: https://saucedemo.com
     steps:
     - uses: actions/checkout@v5
@@ -64,7 +65,6 @@ jobs:
     - name: Install Playwright OS Dependencies
       run: npx playwright install-deps
     - name: Run API tests
-      # Added --workers=1 to prevent parallel REST mutations from colliding in CI
       run: npx playwright test --project=restful-booker-api --workers=1
     - uses: actions/upload-artifact@v5
       if: ${{ !cancelled() }}
