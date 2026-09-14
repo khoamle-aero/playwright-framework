@@ -18,9 +18,9 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install --with-deps chromium firefox
     - name: Run UI tests
-      run: npx playwright test --project=chromium --project=firefox --project=webkit
+      run: npx playwright test --project=parabank-chromium --project=parabank-firefox --project=saucedemo-chromium --project=restful-booker-hybrid-chromium --headless
     - uses: actions/upload-artifact@v5
       if: ${{ !cancelled() }}
       with:
