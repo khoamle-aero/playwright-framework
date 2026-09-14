@@ -10,7 +10,9 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
-      BASE_URL: https://saucedemo.com
+      PARABANK_URL: https://parabank.parasoft.com/parabank/
+      SAUCEDEMO_URL: https://www.saucedemo.com/
+      RESTFUL_BOOKER_URL: https://restful-booker.herokuapp.com
     permissions:
       contents: write
     steps:
