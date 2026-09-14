@@ -15,7 +15,7 @@ export default defineConfig({
   // No global baseURL here — each project below sets its own, scoped to
   // that site's/API's test folder, so the suites can't collide.
   use: {
-    headless: false,
+    headless: process.env.CI ? true : false,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
