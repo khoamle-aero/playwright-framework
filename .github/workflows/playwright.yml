@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_URL: https://saucedemo.com
-    # Grants write access to allow GitHub Actions to commit updated snapshots
     permissions:
       contents: write
     steps:
@@ -22,19 +21,15 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
-      # Only installs Chromium and Firefox since WebKit is not in your config
       run: npx playwright install --with-deps chromium firefox
     - name: Run UI tests
-      # Appended --update-snapshots to automatically write missing or updated baselines
       run: npx playwright test --project=parabank-chromium --project=parabank-firefox --project=saucedemo-chromium --project=restful-booker-hybrid-chromium --update-snapshots
     
     - name: Commit and Push Updated Snapshots
       if: ${{ !cancelled() }}
       run: |
         git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@://github.com"
-        
-        # Check if there are any new or modified snapshot images
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         if [ -n "$(git status --porcelain | grep '\.png')" ]; then
           echo "New snapshots detected. Committing changes..."
           git add src/tests/**/*.png
@@ -65,10 +60,10 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright OS Dependencies
-      # Installs framework dependencies needed by the test runner without downloading browser packages
       run: npx playwright install-deps
     - name: Run API tests
-      run: npx playwright test --project=restful-booker-api
+      # Added --workers=1 to prevent parallel REST mutations from colliding in CI
+      run: npx playwright test --project=restful-booker-api --workers=1
     - uses: actions/upload-artifact@v5
       if: ${{ !cancelled() }}
       with:
