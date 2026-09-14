@@ -64,7 +64,9 @@ jobs:
         node-version: lts/*
     - name: Install dependencies
       run: npm ci
-    # Browser installation step is removed for pure API runs (saves ~2 minutes)
+    - name: Install Playwright OS Dependencies
+      # Installs framework dependencies needed by the test runner without downloading browser packages
+      run: npx playwright install-deps
     - name: Run API tests
       run: npx playwright test --project=restful-booker-api
     - uses: actions/upload-artifact@v5
