@@ -1,6 +1,6 @@
 import { test as base } from '@playwright/test';
 import { RegistrationPage } from '../pages/parabank/RegistrationPage';
-import { AccountsOverviewPage } from '../pages/parabank/AccountsOverviewPage.ts';
+import { AccountsOverviewPage } from '../pages/parabank/AccountsOverviewPage';
 import { generateCustomer, type NewCustomer } from '../../utilities/data-generator';
 
 /**

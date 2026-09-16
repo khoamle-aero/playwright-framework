@@ -18,6 +18,7 @@ export class RegistrationPage {
   readonly usernameTakenError: Locator;
   readonly successHeading: Locator;
   readonly successMessage: Locator;
+  readonly overViewButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -36,6 +37,7 @@ export class RegistrationPage {
     this.usernameTakenError = page.locator('#customer\\.username\\.errors');
     this.successHeading = page.getByRole('heading', { name: 'Welcome' });
     this.successMessage = page.getByText('Your account was created successfully. You are now logged in.');
+    this.overViewButton = page.locator('a[href*="overview.htm"]');
   }
 
   async goto(): Promise<void> {
@@ -60,6 +62,8 @@ export class RegistrationPage {
   async expectRegistrationSucceeded(): Promise<void> {
     await expect(this.successHeading).toBeVisible();
     await expect(this.successMessage).toBeVisible();
+
+    await this.overViewButton.click();
 
   }
 
