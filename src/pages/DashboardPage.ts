@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test';
-import { BasePage } from './base-page';
+import { BasePage } from './BasePage';
 
 export class DashboardPage extends BasePage {
   private readonly pageTitle: Locator;

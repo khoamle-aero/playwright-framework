@@ -3,6 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 const parabankURL = process.env.PARABANK_URL || 'https://parabank.parasoft.com/parabank/';
 const saucedemoURL = process.env.SAUCEDEMO_URL || 'https://www.saucedemo.com/';
 const restfulBookerURL = process.env.RESTFUL_BOOKER_URL || 'https://restful-booker.herokuapp.com';
+const openWeatherURL = process.env.OPENWEATHER_URL || 'https://api.openweathermap.org';
+const demoQA = process.env.DEMOQA_URL || 'https://demoqa.com';
 
 export default defineConfig({
   testDir: './src/tests',
@@ -22,6 +24,14 @@ export default defineConfig({
   },
 
   projects: [
+    {
+      name: 'demoQA-chromium',
+      testDir: './src/tests/demoQA',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: demoQA,
+      },
+    },
     {
       name: 'parabank-chromium',
       testDir: './src/tests/parabank',
@@ -44,6 +54,15 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         baseURL: saucedemoURL,
+      },
+    },
+    {
+      name: 'openweather-chromium',
+      testDir: './src/tests/api/openWeather',
+      testMatch: '**/*.spec.ts', // Ensures it looks for spec files here
+      use: {
+        ...devices['Desktop Chrome'],
+         baseURL: openWeatherURL, // ◄ Update this line
       },
     },
     {
