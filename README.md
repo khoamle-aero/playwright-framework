@@ -1,3 +1,5 @@
+[![Playwright Tests](https://github.com/khoamle-aero/playwright-framework/actions/workflows/playwright.yml/badge.svg)](https://github.com/khoamle-aero/playwright-framework/actions/workflows/playwright.yml)
+
 # Playwright Automation Framework
 
 A TypeScript test automation framework demonstrating UI, API, and hybrid testing patterns, with a CI/CD pipeline running three layers in parallel on every push.
