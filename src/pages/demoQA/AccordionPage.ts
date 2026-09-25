@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
 export type AccordionSection = 'one' | 'two' | 'three';
 
@@ -8,7 +8,7 @@ const SECTIONS: Record<AccordionSection, string> = {
   three: 'Why do we use it?',
 };
 
-export class AccordionPage  {
+export class AccordionPage {
   constructor(private readonly page: Page) {}
 
   async navigate(): Promise<void> {
@@ -30,13 +30,5 @@ export class AccordionPage  {
 
   async toggle(section: AccordionSection): Promise<void> {
     await this.heading(section).click();
-  }
-
-  async expectExpanded(section: AccordionSection): Promise<void> {
-    await expect(this.content(section)).toBeVisible();
-  }
-
-  async expectCollapsed(section: AccordionSection): Promise<void> {
-    await expect(this.content(section)).toBeHidden();
   }
 }
