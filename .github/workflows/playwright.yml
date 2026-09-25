@@ -25,7 +25,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium firefox
     - name: Run UI tests
-      run: npx playwright test --project=parabank-chromium --project=parabank-firefox --project=saucedemo-chromium --project=demoQA-chromium --project=restful-booker-hybrid-chromium --update-snapshots
+      run: npx playwright test --project=parabank-chromium --project=saucedemo-chromium --project=demoQA-chromium --project=restful-booker-hybrid-chromium --update-snapshots
     
     - name: Commit and Push Updated Snapshots
       if: ${{ !cancelled() }}

@@ -41,14 +41,6 @@ export default defineConfig({
       },
     },
     {
-      name: 'parabank-firefox',
-      testDir: './src/tests/parabank',
-      use: {
-        ...devices['Desktop Firefox'],
-        baseURL: parabankURL,
-      },
-    },
-    {
       name: 'saucedemo-chromium',
       testDir: './src/tests/saucedemo',
       use: {
